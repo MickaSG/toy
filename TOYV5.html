@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Prestige : Toyota & Lexus</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;1,400&display=swap');
+
+        :root {
+            --bg-color: #080808;
+            --card-bg: #121212;
+            --lexus-silver: #E5E4E2;
+            --toyota-red: #EB0A1E;
+            --correct-color: #27ae60;
+            --gold: #d4af37;
+            --text-light: #ffffff;
+            --text-muted: #666666;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-light);
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: linear-gradient(135deg, #111111 0%, #000000 100%);
+        }
+
+        .quiz-container {
+            background-color: var(--card-bg);
+            border: 1px solid rgba(229, 228, 226, 0.1);
+            border-radius: 8px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
+            width: 90%;
+            max-width: 650px;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: #222;
+            display: none;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--lexus-silver), var(--toyota-red));
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            color: var(--lexus-silver);
+            font-size: 26px;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            font-weight: 400;
+        }
+
+        /* Styles de l'écran d'accueil */
+        .pseudo-input {
+            width: 80%;
+            padding: 12px;
+            margin: 25px 0;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--text-muted);
+            color: var(--text-light);
+            font-size: 16px;
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+            transition: border-color 0.3s;
+        }
+
+        .pseudo-input:focus {
+            outline: none;
+            border-color: var(--lexus-silver);
+        }
+
+        .pseudo-input::placeholder {
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .action-btn {
+            background-color: transparent;
+            color: var(--lexus-silver);
+            border: 1px solid var(--lexus-silver);
+            padding: 14px 35px;
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.3s;
+            margin-top: 10px;
+            width: 80%;
+            max-width: 250px;
+        }
+
+        .action-btn:hover {
+            background-color: var(--lexus-silver);
+            color: var(--bg-color);
+        }
+
+        .reset-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 10px;
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            display: block;
+            margin: 15px auto 0;
+            transition: color 0.3s;
+        }
+
+        .reset-btn:hover {
+            color: var(--toyota-red);
+        }
+
+        .leaderboard-container {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .leaderboard-title {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+        }
+
+        .leaderboard-list {
+            list-style: none;
+            text-align: left;
+            width: 90%;
+            margin: 0 auto;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            font-size: 15px;
+        }
+
+        .leaderboard-item:last-child {
+            border-bottom: none;
+        }
+
+        .lb-rank {
+            color: var(--text-muted);
+            width: 30px;
+            font-weight: 300;
+        }
+
+        .rank-gold {
+            color: var(--gold);
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+        }
+
+        .lb-name {
+            flex-grow: 1;
+            padding-right: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .lb-score-wrap {
+            text-align: right;
+            min-width: 80px;
+        }
+
+        .lb-score {
+            color: var(--toyota-red);
+            font-weight: 500;
+        }
+
+        .lb-time {
+            font-size: 11px;
+            color: var(--text-muted);
+            display: block;
+            margin-top: 2px;
+        }
+
+        /* Styles du Quiz */
+        .question-text {
+            font-size: 18px;
+            font-weight: 400;
+            line-height: 1.5;
+            margin-bottom: 30px;
+            margin-top: 20px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-light);
+            padding: 16px 20px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--lexus-silver);
+            background: rgba(229, 228, 226, 0.05);
+            transform: translateX(5px);
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+        }
+
+        .option-btn.correct {
+            background-color: rgba(39, 174, 96, 0.15);
+            border-color: var(--correct-color);
+            color: var(--correct-color);
+        }
+
+        .option-btn.incorrect {
+            background-color: rgba(235, 10, 30, 0.15);
+            border-color: var(--toyota-red);
+            color: var(--toyota-red);
+        }
+
+        .score-text {
+            font-size: 48px;
+            color: var(--lexus-silver);
+            font-family: 'Playfair Display', serif;
+            margin: 10px 0;
+        }
+
+        .score-text span {
+            color: var(--toyota-red);
+        }
+        
+        .time-text {
+            font-size: 14px;
+            color: var(--gold);
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        .error-msg {
+            color: var(--toyota-red);
+            font-size: 12px;
+            margin-top: -15px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #quiz-block, #result-container {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <div class="progress-bar-container" id="progress-wrapper">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <div id="start-screen" class="fade-in">
+            <h1>Quiz Prestige</h1>
+            <input type="text" id="pseudo-input" class="pseudo-input" placeholder="Entrez votre pilote..." autocomplete="off" maxlength="15">
+            <p id="error-msg" class="error-msg">Veuillez entrer un pseudo.</p>
+            <button class="action-btn" onclick="startQuiz()">Démarrer</button>
+            <button class="reset-btn" onclick="resetScores()">Réinitialiser le classement</button>
+
+            <div class="leaderboard-container">
+                <div class="leaderboard-title">Temple de la Renommée</div>
+                <ul class="leaderboard-list" id="leaderboard-list">
+                    </ul>
+            </div>
+        </div>
+
+        <div id="quiz-block">
+            <div class="question-text" id="question">Chargement...</div>
+            <div class="options-container" id="options">
+                </div>
+        </div>
+
+        <div id="result-container">
+            <h1>Évaluation</h1>
+            <div class="score-text"><span id="score">0</span> / 15</div>
+            <div class="time-text" id="time-display">Temps: 0s</div>
+            <p id="score-message" style="margin-bottom: 30px; color: var(--text-muted);"></p>
+            <button class="action-btn" onclick="returnToHome()">Classement</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            // Facile
+            { question: "Quel est le nom de la division de luxe créée par Toyota ?", options: ["Acura", "Infiniti", "Lexus", "Genesis"], correct: 2 },
+            { question: "Quelle voiture Toyota est considérée comme la pionnière mondiale des motorisations hybrides ?", options: ["Corolla", "Prius", "Yaris", "Camry"], correct: 1 },
+            { question: "De quel pays la marque Toyota est-elle originaire ?", options: ["Corée du Sud", "Chine", "Japon", "États-Unis"], correct: 2 },
+            { question: "Quel pick-up Toyota est mondialement réputé pour son indestructibilité ?", options: ["Tundra", "Tacoma", "Hilux", "Land Cruiser"], correct: 2 },
+            { question: "Que représentent les trois ellipses du logo Toyota ?", options: ["La terre, le ciel et la mer", "Le cœur du client, le produit et l'expansion", "Les trois fondateurs", "La vitesse, la sécurité et l'innovation"], correct: 1 },
+            
+            // Moyen
+            { question: "En quelle année la marque Lexus a-t-elle été officiellement lancée aux États-Unis ?", options: ["1983", "1989", "1994", "1998"], correct: 1 },
+            { question: "Que signifie l'acronyme 'GR' présent sur les modèles sportifs de Toyota ?", options: ["Grand Racing", "Global Road", "Gazoo Racing", "Grip Reaction"], correct: 2 },
+            { question: "Quel modèle historique de Lexus fut leur toute première berline de série ?", options: ["IS 200", "RX 300", "LFA", "LS 400"], correct: 3 },
+            { question: "Comment nomme-t-on les maîtres-artisans d'élite qui assemblent les Lexus ?", options: ["Sensei", "Takumi", "Ronin", "Shinobi"], correct: 1 },
+            { question: "Quel modèle sportif mythique de Toyota a été relancé récemment avec BMW ?", options: ["Celica", "MR2", "Supra", "GT86"], correct: 2 },
+            
+            // Difficile
+            { question: "La supercar Lexus LFA possède un V10 unique. Avec qui a-t-il été co-développé ?", options: ["Honda", "Yamaha", "Kawasaki", "Sony"], correct: 1 },
+            { question: "Quelle peinture exclusive à Lexus nécessite 15 ans de recherche pour recréer la couleur du papillon Morpho ?", options: ["Infrared", "Structural Blue", "Sonic Titanium", "Ultrasonic Blue"], correct: 1 },
+            { question: "Quel modèle hybride Toyota a remporté Le Mans trois fois de suite (2018-2020) ?", options: ["TS050 Hybrid", "GR010 Hybrid", "GT-One", "TS030 Hybrid"], correct: 0 },
+            { question: "Quel bois précieux, utilisé pour les pianos de concert, orne certains volants Lexus ?", options: ["Bois de rose", "Bois de Shimamoku", "Ébène de Macassar", "Ronce de noyer"], correct: 1 },
+            { question: "Avant de fabriquer des voitures, que produisait l'entreprise de Sakichi Toyoda ?", options: ["Des montres", "Des métiers à tisser", "Des motos", "Des instruments"], correct: 1 }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let currentPseudo = "";
+        let startTime = 0;
+        let totalTime = 0;
+        let leaderboard = JSON.parse(localStorage.getItem('toyotaLexusLeaderboard')) || [];
+
+        const startScreen = document.getElementById('start-screen');
+        const quizBlock = document.getElementById('quiz-block');
+        const resultContainer = document.getElementById('result-container');
+        const progressWrapper = document.getElementById('progress-wrapper');
+        const progressBar = document.getElementById('progress-bar');
+        const questionEl = document.getElementById('question');
+        const optionsEl = document.getElementById('options');
+        const scoreEl = document.getElementById('score');
+        const timeDisplayEl = document.getElementById('time-display');
+        const scoreMessageEl = document.getElementById('score-message');
+        const pseudoInput = document.getElementById('pseudo-input');
+        const errorMsg = document.getElementById('error-msg');
+        const leaderboardList = document.getElementById('leaderboard-list');
+
+        renderLeaderboard();
+
+        pseudoInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') startQuiz();
+        });
+
+        function renderLeaderboard() {
+            leaderboardList.innerHTML = '';
+            
+            if (leaderboard.length === 0) {
+                leaderboardList.innerHTML = '<li style="text-align:center; color:#666; font-size:13px;">Aucun pilote enregistré pour le moment.</li>';
+                return;
+            }
+
+            leaderboard.sort((a, b) => {
+                if (b.score !== a.score) {
+                    return b.score - a.score;
+                }
+                return a.time - b.time;
+            });
+
+            const top5 = leaderboard.slice(0, 5);
+
+            top5.forEach((entry, index) => {
+                const li = document.createElement('li');
+                li.classList.add('leaderboard-item');
+                
+                const rankClass = index === 0 ? 'lb-rank rank-gold' : 'lb-rank';
+                
+                li.innerHTML = `
+                    <span class="${rankClass}">#${index + 1}</span>
+                    <span class="lb-name">${entry.name}</span>
+                    <div class="lb-score-wrap">
+                        <span class="lb-score">${entry.score} pts</span>
+                        <span class="lb-time">${entry.time} sec</span>
+                    </div>
+                `;
+                leaderboardList.appendChild(li);
+            });
+        }
+
+        function saveScore() {
+            const existingPlayerIndex = leaderboard.findIndex(p => p.name.toLowerCase() === currentPseudo.toLowerCase());
+            
+            if(existingPlayerIndex !== -1) {
+                const existing = leaderboard[existingPlayerIndex];
+                if(score > existing.score || (score === existing.score && totalTime < existing.time)) {
+                    leaderboard[existingPlayerIndex].score = score;
+                    leaderboard[existingPlayerIndex].time = totalTime;
+                }
+            } else {
+                leaderboard.push({ name: currentPseudo, score: score, time: totalTime });
+            }
+            
+            localStorage.setItem('toyotaLexusLeaderboard', JSON.stringify(leaderboard));
+            renderLeaderboard();
+        }
+
+        function startQuiz() {
+            const pseudo = pseudoInput.value.trim();
+            if (pseudo === "") {
+                errorMsg.style.display = 'block';
+                return;
+            }
+            errorMsg.style.display = 'none';
+            currentPseudo = pseudo;
+
+            currentQuestionIndex = 0;
+            score = 0;
+            startTime = Date.now();
+
+            startScreen.style.display = 'none';
+            progressWrapper.style.display = 'block';
+            quizBlock.style.display = 'block';
+            quizBlock.classList.add('fade-in');
+
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            quizBlock.classList.remove('fade-in');
+            void quizBlock.offsetWidth; 
+            quizBlock.classList.add('fade-in');
+
+            const currentData = quizData[currentQuestionIndex];
+            questionEl.innerText = currentData.question;
+            
+            const progressPercent = (currentQuestionIndex / quizData.length) * 100;
+            progressBar.style.width = `${progressPercent}%`;
+
+            optionsEl.innerHTML = '';
+            
+            currentData.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.innerText = option;
+                button.classList.add('option-btn');
+                button.onclick = (e) => selectAnswer(index, e.target);
+                optionsEl.appendChild(button);
+            });
+        }
+
+        function selectAnswer(selectedIndex, btnElement) {
+            const correctIndex = quizData[currentQuestionIndex].correct;
+            const allButtons = optionsEl.querySelectorAll('.option-btn');
+            
+            allButtons.forEach(btn => btn.disabled = true);
+
+            if (selectedIndex === correctIndex) {
+                btnElement.classList.add('correct');
+                score++;
+            } else {
+                btnElement.classList.add('incorrect');
+                allButtons[correctIndex].classList.add('correct');
+            }
+
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < quizData.length) {
+                    loadQuestion();
+                } else {
+                    showResults();
+                }
+            }, 1000); 
+        }
+
+        function showResults() {
+            totalTime = Math.floor((Date.now() - startTime) / 1000);
+
+            quizBlock.style.display = 'none';
+            resultContainer.style.display = 'block';
+            resultContainer.classList.add('fade-in');
+            progressBar.style.width = '100%';
+            
+            scoreEl.innerText = score;
+            timeDisplayEl.innerText = `Chrono : ${totalTime} secondes`;
+            
+            saveScore();
+
+            let msg = "";
+            if (score === 15) msg = `Parfait ${currentPseudo}. Un sans-faute digne d'un pilote professionnel !`;
+            else if (score >= 10) msg = `Très impressionnant ${currentPseudo}. L'esprit Gazoo Racing coule dans vos veines.`;
+            else if (score >= 5) msg = `Pas mal ${currentPseudo}, mais il reste du chemin avant de maîtriser l'histoire.`;
+            else msg = `Ouch ${currentPseudo}... Un petit tour en concession s'impose.`;
+            
+            scoreMessageEl.innerText = msg;
+        }
+
+        function returnToHome() {
+            resultContainer.style.display = 'none';
+            progressWrapper.style.display = 'none';
+            startScreen.style.display = 'block';
+            startScreen.classList.add('fade-in');
+            pseudoInput.value = ''; 
+        }
+
+        // Fonction pour réinitialiser les scores avec confirmation
+        function resetScores() {
+            if (confirm("Êtes-vous sûr de vouloir effacer le classement ? Cette action est irréversible.")) {
+                leaderboard = [];
+                localStorage.removeItem('toyotaLexusLeaderboard');
+                renderLeaderboard();
+            }
+        }
+    </script>
+</body>
+</html>
