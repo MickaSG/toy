@@ -263,6 +263,36 @@
             color: var(--toyota-red);
         }
 
+        /* ----- STYLES DU POPUP LOSER ----- */
+        .tease-popup {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.5);
+            background: rgba(235, 10, 30, 0.95); /* Toyota Red */
+            color: #ffffff;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            box-shadow: 0 0 40px rgba(235, 10, 30, 0.8);
+            opacity: 0;
+            visibility: hidden;
+            z-index: 100;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none; 
+        }
+
+        .tease-popup.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1) rotate(-5deg); 
+        }
+        /* ---------------------------------- */
+
         .score-text {
             font-size: 48px;
             color: var(--lexus-silver);
@@ -328,6 +358,7 @@
             <div class="question-text" id="question">Chargement...</div>
             <div class="options-container" id="options">
                 </div>
+            <div id="tease-popup" class="tease-popup">LOSER !</div>
         </div>
 
         <div id="result-container">
@@ -356,7 +387,7 @@
             { question: "Quel modèle historique de Lexus fut leur toute première berline de série ?", options: ["IS 200", "RX 300", "LFA", "LS 400"], correct: 3 },
             { question: "Monsieur LE CREFF roule avec quel modèle ?", options: ["IQ", "Yaris GR", "Corolla GR", "Proace"], correct: 1 },
             { question: "Quel modèle sportif mythique de Toyota a été relancé récemment avec BMW ?", options: ["Celica", "MR2", "Supra", "GT86"], correct: 2 },
-			{ question: "Quel modèle de SUV a été le premier grand succès mondial de Lexus et reste son best-seller ?", options: ["UX", "NX", "LX", "RX"], correct: 3 },
+            { question: "Quel modèle de SUV a été le premier grand succès mondial de Lexus et reste son best-seller ?", options: ["UX", "NX", "LX", "RX"], correct: 3 },
             { question: "En quelle année Toyota a-t-elle enfin remporté sa toute première victoire au classement général des mythiques 24 Heures du Mans ?", options: ["1999", "2016", "2018", "2021"], correct: 2 },
             
             // Difficile
@@ -365,7 +396,7 @@
             { question: "Qui est le président de Emil Frey France ?", options: ["Alain Joubert", "Hervé Miralles", "Isabelle Muron", "Steve Jobs"], correct: 1 },
             { question: "Quel modèle hybride Toyota a remporté Le Mans trois fois de suite (2018-2020) ?", options: ["TS050 Hybrid", "GR010 Hybrid", "GT-One", "TS030 Hybrid"], correct: 0 },
             { question: "Quel bois précieux, utilisé pour les pianos de concert, orne certains volants Lexus ?", options: ["Bois de rose", "Bois de Shimamoku", "Ébène de Macassar", "Ronce de noyer"], correct: 1 },
-			{ question: "Quelle voiture de sport de Toyota est devenue une légende mondiale du drift grâce à l'animé Initial D ?", options: ["Supra", "AE86", "Celica", "MR2"], correct: 1 },
+            { question: "Quelle voiture de sport de Toyota est devenue une légende mondiale du drift grâce à l'animé Initial D ?", options: ["Supra", "AE86", "Celica", "MR2"], correct: 1 },
             { question: "Avant de fabriquer des voitures, que produisait l'entreprise de Sakichi Toyoda ?", options: ["Des montres", "Des métiers à tisser", "Des motos", "Des instruments"], correct: 1 }
         ];
 
@@ -375,6 +406,9 @@
         let startTime = 0;
         let totalTime = 0;
         let leaderboard = JSON.parse(localStorage.getItem('toyotaLexusLeaderboard')) || [];
+
+        // Tableau des messages moqueurs
+        const teaseMessages = ["ET NON !", "RATÉ !", "SÉRIEUSEMENT ?", "AÏE...", "BÊTE COMME THOMAS !"];
 
         const startScreen = document.getElementById('start-screen');
         const quizBlock = document.getElementById('quiz-block');
@@ -389,6 +423,7 @@
         const pseudoInput = document.getElementById('pseudo-input');
         const errorMsg = document.getElementById('error-msg');
         const leaderboardList = document.getElementById('leaderboard-list');
+        const teasePopup = document.getElementById('tease-popup');
 
         renderLeaderboard();
 
@@ -503,6 +538,16 @@
             } else {
                 btnElement.classList.add('incorrect');
                 allButtons[correctIndex].classList.add('correct');
+
+                // --- APPARITION DU POPUP LOSER ---
+                const randomMsg = teaseMessages[Math.floor(Math.random() * teaseMessages.length)];
+                teasePopup.innerText = randomMsg;
+                teasePopup.classList.add('show');
+                
+                setTimeout(() => {
+                    teasePopup.classList.remove('show');
+                }, 800); 
+                // ---------------------------------
             }
 
             setTimeout(() => {
@@ -512,7 +557,7 @@
                 } else {
                     showResults();
                 }
-            }, 1000); 
+            }, 1111); 
         }
 
         function showResults() {
