@@ -331,8 +331,8 @@
         </div>
 
         <div id="result-container">
-            <h1>Évaluation</h1>
-            <div class="score-text"><span id="score">0</span> / 15</div>
+            <h1>Score</h1>
+            <div class="score-text"><span id="score">0</span> / 21</div>
             <div class="time-text" id="time-display">Temps: 0s</div>
             <p id="score-message" style="margin-bottom: 30px; color: var(--text-muted);"></p>
             <button class="action-btn" onclick="returnToHome()">Classement</button>
@@ -346,20 +346,26 @@
             { question: "Quelle voiture Toyota est considérée comme la pionnière mondiale des motorisations hybrides ?", options: ["Corolla", "Prius", "Yaris", "Camry"], correct: 1 },
             { question: "De quel pays la marque Toyota est-elle originaire ?", options: ["Corée du Sud", "Chine", "Japon", "États-Unis"], correct: 2 },
             { question: "Quel pick-up Toyota est mondialement réputé pour son indestructibilité ?", options: ["Tundra", "Tacoma", "Hilux", "Land Cruiser"], correct: 2 },
+            { question: "Qui est le meilleur magasinier ?", options: ["Max", "Isma", "Micka", "Thomas"], correct: 2 },
+            { question: "Quel SUV compact de Toyota, pionnier du genre dans les années 90, est l'un des véhicules les plus vendus au monde ?", options: ["C-HR", "RAV4", "Highlander", "Land Cruiser"], correct: 1 },
             { question: "Que représentent les trois ellipses du logo Toyota ?", options: ["La terre, le ciel et la mer", "Le cœur du client, le produit et l'expansion", "Les trois fondateurs", "La vitesse, la sécurité et l'innovation"], correct: 1 },
             
             // Moyen
             { question: "En quelle année la marque Lexus a-t-elle été officiellement lancée aux États-Unis ?", options: ["1983", "1989", "1994", "1998"], correct: 1 },
             { question: "Que signifie l'acronyme 'GR' présent sur les modèles sportifs de Toyota ?", options: ["Grand Racing", "Global Road", "Gazoo Racing", "Grip Reaction"], correct: 2 },
             { question: "Quel modèle historique de Lexus fut leur toute première berline de série ?", options: ["IS 200", "RX 300", "LFA", "LS 400"], correct: 3 },
-            { question: "Comment nomme-t-on les maîtres-artisans d'élite qui assemblent les Lexus ?", options: ["Sensei", "Takumi", "Ronin", "Shinobi"], correct: 1 },
+            { question: "Monsieur LE CREFF roule avec quel modèle ?", options: ["IQ", "Yaris GR", "Corolla GR", "Proace"], correct: 1 },
             { question: "Quel modèle sportif mythique de Toyota a été relancé récemment avec BMW ?", options: ["Celica", "MR2", "Supra", "GT86"], correct: 2 },
+			{ question: "Quel modèle de SUV a été le premier grand succès mondial de Lexus et reste son best-seller ?", options: ["UX", "NX", "LX", "RX"], correct: 3 },
+            { question: "En quelle année Toyota a-t-elle enfin remporté sa toute première victoire au classement général des mythiques 24 Heures du Mans ?", options: ["1999", "2016", "2018", "2021"], correct: 2 },
             
             // Difficile
             { question: "La supercar Lexus LFA possède un V10 unique. Avec qui a-t-il été co-développé ?", options: ["Honda", "Yamaha", "Kawasaki", "Sony"], correct: 1 },
-            { question: "Quelle peinture exclusive à Lexus nécessite 15 ans de recherche pour recréer la couleur du papillon Morpho ?", options: ["Infrared", "Structural Blue", "Sonic Titanium", "Ultrasonic Blue"], correct: 1 },
+            { question: "Où se situe le lieu de formation Toyota ?", options: ["Disney Land", "Les Minguettes", "Toyota City", "Vaucresson"], correct: 3 },
+            { question: "Qui est le président de Emil Frey France ?", options: ["Alain Joubert", "Hervé Miralles", "Isabelle Muron", "Steve Jobs"], correct: 1 },
             { question: "Quel modèle hybride Toyota a remporté Le Mans trois fois de suite (2018-2020) ?", options: ["TS050 Hybrid", "GR010 Hybrid", "GT-One", "TS030 Hybrid"], correct: 0 },
             { question: "Quel bois précieux, utilisé pour les pianos de concert, orne certains volants Lexus ?", options: ["Bois de rose", "Bois de Shimamoku", "Ébène de Macassar", "Ronce de noyer"], correct: 1 },
+			{ question: "Quelle voiture de sport de Toyota est devenue une légende mondiale du drift grâce à l'animé Initial D ?", options: ["Supra", "AE86", "Celica", "MR2"], correct: 1 },
             { question: "Avant de fabriquer des voitures, que produisait l'entreprise de Sakichi Toyoda ?", options: ["Des montres", "Des métiers à tisser", "Des motos", "Des instruments"], correct: 1 }
         ];
 
@@ -523,7 +529,7 @@
             saveScore();
 
             let msg = "";
-            if (score === 15) msg = `Parfait ${currentPseudo}. Un sans-faute digne d'un pilote professionnel !`;
+            if (score === 21) msg = `Parfait ${currentPseudo}. Un sans-faute digne d'un pilote professionnel !`;
             else if (score >= 10) msg = `Très impressionnant ${currentPseudo}. L'esprit Gazoo Racing coule dans vos veines.`;
             else if (score >= 5) msg = `Pas mal ${currentPseudo}, mais il reste du chemin avant de maîtriser l'histoire.`;
             else msg = `Ouch ${currentPseudo}... Un petit tour en concession s'impose.`;
