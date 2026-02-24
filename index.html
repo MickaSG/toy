@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Eras Tour : Trivia Ultime</title>
+    <title>Quiz : Toyota & Lexus</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;1,400&display=swap');
 
         :root {
-            --bg-color: #0b0a10; /* Midnight blue très sombre */
-            --card-bg: #15131c;
-            --lavender: #c2a3d1; /* Lavender Haze */
-            --gold: #d4af37; /* Fearless gold */
+            --bg-color: #080808;
+            --card-bg: #121212;
+            --lexus-silver: #E5E4E2;
+            --toyota-red: #EB0A1E;
             --correct-color: #27ae60;
-            --wrong-color: #e74c3c; /* Red era */
-            --text-light: #fdfdfd;
-            --text-muted: #8a8893;
+            --gold: #d4af37;
+            --text-light: #ffffff;
+            --text-muted: #666666;
         }
 
         * {
@@ -32,14 +32,14 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-image: radial-gradient(circle at top right, #241c38 0%, #0b0a10 80%);
+            background-image: linear-gradient(135deg, #111111 0%, #000000 100%);
         }
 
         .quiz-container {
             background-color: var(--card-bg);
-            border: 1px solid rgba(194, 163, 209, 0.15);
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 20px rgba(194, 163, 209, 0.05);
+            border: 1px solid rgba(229, 228, 226, 0.1);
+            border-radius: 8px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
             width: 90%;
             max-width: 650px;
             padding: 40px;
@@ -53,41 +53,32 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 5px;
-            background-color: rgba(255, 255, 255, 0.05);
+            height: 4px;
+            background-color: #222;
             display: none;
         }
 
         .progress-bar {
             height: 100%;
-            /* Dégradé rappelant les Eras : Lover, Fearless, Speak Now, Red, 1989, Reputation */
-            background: linear-gradient(90deg, #f7b0cc, #f2d07b, #b992c6, #c02d38, #b5e1e9, #000000);
+            background: linear-gradient(90deg, var(--lexus-silver), var(--toyota-red));
             width: 0%;
             transition: width 0.4s ease;
         }
 
         h1 {
             font-family: 'Playfair Display', serif;
-            color: var(--lavender);
-            font-size: 28px;
-            margin-bottom: 10px;
+            color: var(--lexus-silver);
+            font-size: 26px;
+            margin-bottom: 15px;
             letter-spacing: 2px;
             font-weight: 400;
-        }
-        
-        .subtitle {
-            font-size: 11px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            margin-bottom: 20px;
         }
 
         /* Styles de l'écran d'accueil */
         .pseudo-input {
             width: 80%;
             padding: 12px;
-            margin: 20px 0;
+            margin: 25px 0;
             background: transparent;
             border: none;
             border-bottom: 1px solid var(--text-muted);
@@ -95,30 +86,28 @@
             font-size: 16px;
             font-family: 'Montserrat', sans-serif;
             text-align: center;
-            transition: border-color 0.3s, box-shadow 0.3s;
+            transition: border-color 0.3s;
         }
 
         .pseudo-input:focus {
             outline: none;
-            border-color: var(--lavender);
-            box-shadow: 0 1px 0 var(--lavender);
+            border-color: var(--lexus-silver);
         }
 
         .pseudo-input::placeholder {
             color: rgba(255, 255, 255, 0.2);
-            font-style: italic;
         }
 
         .action-btn {
             background-color: transparent;
-            color: var(--lavender);
-            border: 1px solid var(--lavender);
+            color: var(--lexus-silver);
+            border: 1px solid var(--lexus-silver);
             padding: 14px 35px;
             font-family: 'Montserrat', sans-serif;
             text-transform: uppercase;
             letter-spacing: 2px;
             cursor: pointer;
-            border-radius: 6px;
+            border-radius: 4px;
             transition: 0.3s;
             margin-top: 10px;
             width: 80%;
@@ -126,22 +115,8 @@
         }
 
         .action-btn:hover {
-            background-color: var(--lavender);
+            background-color: var(--lexus-silver);
             color: var(--bg-color);
-            box-shadow: 0 0 15px rgba(194, 163, 209, 0.4);
-        }
-
-        .share-btn {
-            border-color: var(--gold);
-            color: var(--gold);
-            margin-top: 15px;
-            font-size: 12px;
-        }
-
-        .share-btn:hover {
-            background-color: var(--gold);
-            color: var(--bg-color);
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
         }
 
         .reset-btn {
@@ -159,7 +134,7 @@
         }
 
         .reset-btn:hover {
-            color: var(--wrong-color);
+            color: var(--toyota-red);
         }
 
         .leaderboard-container {
@@ -170,7 +145,7 @@
 
         .leaderboard-title {
             font-size: 13px;
-            color: var(--gold);
+            color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 3px;
             margin-bottom: 20px;
@@ -221,7 +196,7 @@
         }
 
         .lb-score {
-            color: var(--lavender);
+            color: var(--toyota-red);
             font-weight: 500;
         }
 
@@ -252,13 +227,13 @@
         }
 
         .option-btn {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(194, 163, 209, 0.15);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             color: var(--text-light);
             padding: 16px 20px;
             font-family: 'Montserrat', sans-serif;
             font-size: 15px;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
             transition: all 0.3s ease;
             text-align: left;
@@ -267,8 +242,8 @@
         }
 
         .option-btn:hover:not(:disabled) {
-            border-color: var(--lavender);
-            background: rgba(194, 163, 209, 0.05);
+            border-color: var(--lexus-silver);
+            background: rgba(229, 228, 226, 0.05);
             transform: translateX(5px);
         }
 
@@ -283,31 +258,31 @@
         }
 
         .option-btn.incorrect {
-            background-color: rgba(231, 76, 60, 0.15);
-            border-color: var(--wrong-color);
-            color: var(--wrong-color);
+            background-color: rgba(235, 10, 30, 0.15);
+            border-color: var(--toyota-red);
+            color: var(--toyota-red);
         }
 
         .score-text {
             font-size: 48px;
-            color: var(--gold);
+            color: var(--lexus-silver);
             font-family: 'Playfair Display', serif;
             margin: 10px 0;
         }
 
         .score-text span {
-            color: var(--lavender);
+            color: var(--toyota-red);
         }
         
         .time-text {
             font-size: 14px;
-            color: var(--text-muted);
+            color: var(--gold);
             margin-bottom: 20px;
             letter-spacing: 1px;
         }
 
         .error-msg {
-            color: var(--wrong-color);
+            color: var(--toyota-red);
             font-size: 12px;
             margin-top: -15px;
             margin-bottom: 15px;
@@ -336,15 +311,14 @@
         </div>
 
         <div id="start-screen" class="fade-in">
-            <h1>The Eras Tour Trivia</h1>
-            <div class="subtitle">Êtes-vous prêt(e) pour ça ?</div>
-            <input type="text" id="pseudo-input" class="pseudo-input" placeholder="Entrez votre nom de Swiftie..." autocomplete="off" maxlength="15">
+            <h1>Quiz</h1>
+            <input type="text" id="pseudo-input" class="pseudo-input" placeholder="Entrez votre nom de pilote..." autocomplete="off" maxlength="15">
             <p id="error-msg" class="error-msg">Veuillez entrer un pseudo.</p>
             <button class="action-btn" onclick="startQuiz()">Démarrer</button>
             <button class="reset-btn" onclick="resetScores()">Réinitialiser le classement</button>
 
             <div class="leaderboard-container">
-                <div class="leaderboard-title">Masterminds (Top 5)</div>
+                <div class="leaderboard-title">Temple des Goats</div>
                 <ul class="leaderboard-list" id="leaderboard-list">
                     </ul>
             </div>
@@ -357,48 +331,44 @@
         </div>
 
         <div id="result-container">
-            <h1>Long Story Short...</h1>
+            <h1>Évaluation</h1>
             <div class="score-text"><span id="score">0</span> / 15</div>
             <div class="time-text" id="time-display">Temps: 0s</div>
-            <p id="score-message" style="margin-bottom: 20px; color: var(--text-muted); line-height: 1.5;"></p>
+            <p id="score-message" style="margin-bottom: 30px; color: var(--text-muted);"></p>
             <button class="action-btn" onclick="returnToHome()">Classement</button>
-            <button class="action-btn share-btn" onclick="shareScore()">Copier & Défier</button>
         </div>
     </div>
 
     <script>
-        // Nouvelles questions The Eras Tour (Facile -> Difficile)
-        const baseQuizData = [
+        const quizData = [
             // Facile
-            { question: "Quel est le nom donné aux fans de Taylor Swift ?", options: ["Les Taylors", "The Squad", "Les Swifties", "Les Fearless"], correct: 2 },
-            { question: "Combien d'ères (albums) The Eras Tour célébrait-il officiellement à son lancement ?", options: ["8", "9", "10", "11"], correct: 2 },
-            { question: "Quelle tradition les fans s'échangent-ils pendant la tournée, inspirée de la chanson 'You're On Your Own, Kid' ?", options: ["Des polaroïds", "Des bracelets d'amitié", "Des bagues serpent", "Des t-shirts"], correct: 1 },
-            { question: "Quelle chanson très énergique clôture chaque concert de la tournée ?", options: ["Shake It Off", "Cruel Summer", "Karma", "Bejeweled"], correct: 2 },
-            { question: "Quel objet Taylor offre-t-elle à un fan chanceux dans le public pendant la chanson '22' ?", options: ["Son chapeau noir", "Ses lunettes de soleil", "Un t-shirt signé", "Un médiator"], correct: 0 },
+            { question: "Quel est le nom de la division de luxe créée par Toyota ?", options: ["Acura", "Infiniti", "Lexus", "Genesis"], correct: 2 },
+            { question: "Quelle voiture Toyota est considérée comme la pionnière mondiale des motorisations hybrides ?", options: ["Corolla", "Prius", "Yaris", "Camry"], correct: 1 },
+            { question: "De quel pays la marque Toyota est-elle originaire ?", options: ["Corée du Sud", "Chine", "Japon", "États-Unis"], correct: 2 },
+            { question: "Quel pick-up Toyota est mondialement réputé pour son indestructibilité ?", options: ["Tundra", "Tacoma", "Hilux", "Land Cruiser"], correct: 2 },
+            { question: "Que représentent les trois ellipses du logo Toyota ?", options: ["La terre, le ciel et la mer", "Le cœur du client, le produit et l'expansion", "Les trois fondateurs", "La vitesse, la sécurité et l'innovation"], correct: 1 },
             
             // Moyen
-            { question: "Dans quelle ville américaine The Eras Tour a-t-il officiellement débuté en mars 2023 (renommée Swift City pour l'occasion) ?", options: ["Los Angeles", "New York", "Glendale", "Nashville"], correct: 2 },
-            { question: "Quel grand couturier a conçu le célèbre body incrusté de cristaux porté pour l'ouverture (ère Lover) ?", options: ["Versace", "Dior", "Chanel", "Oscar de la Renta"], correct: 0 },
-            { question: "Quel album a été intégré par surprise à la setlist pour la première fois lors des concerts à Paris en mai 2024 ?", options: ["Midnights", "The Tortured Poets Department", "Speak Now (Taylor's Version)", "Evermore"], correct: 1 },
-            { question: "Quelle chanson, dont la version dure 10 minutes, est le point culminant et dramatique de l'ère Red sur scène ?", options: ["Dear John", "All Too Well", "Champagne Problems", "Tolerate It"], correct: 1 },
-            { question: "Combien de 'chansons surprises' en acoustique y a-t-il traditionnellement par concert ?", options: ["1", "2", "3", "4"], correct: 1 },
+            { question: "En quelle année la marque Lexus a-t-elle été officiellement lancée aux États-Unis ?", options: ["1983", "1989", "1994", "1998"], correct: 1 },
+            { question: "Que signifie l'acronyme 'GR' présent sur les modèles sportifs de Toyota ?", options: ["Grand Racing", "Global Road", "Gazoo Racing", "Grip Reaction"], correct: 2 },
+            { question: "Quel modèle historique de Lexus fut leur toute première berline de série ?", options: ["IS 200", "RX 300", "LFA", "LS 400"], correct: 3 },
+            { question: "Comment nomme-t-on les maîtres-artisans d'élite qui assemblent les Lexus ?", options: ["Sensei", "Takumi", "Ronin", "Shinobi"], correct: 1 },
+            { question: "Quel modèle sportif mythique de Toyota a été relancé récemment avec BMW ?", options: ["Celica", "MR2", "Supra", "GT86"], correct: 2 },
             
             // Difficile
-            { question: "Qui est le danseur de la tournée devenu iconique pour ses répliques improvisées dans la langue locale pendant 'We Are Never Ever Getting Back Together' ?", options: ["Kam Saunders", "Christian Henderson", "Jan Ravnik", "Whyley Yoshimura"], correct: 0 },
-            { question: "Pendant l'ère Reputation, un immense serpent virtuel serpente sur la scène. Quel est son petit nom ?", options: ["Nagini", "Karyn", "Olivia", "Taylor"], correct: 1 },
-            { question: "À qui Taylor Swift a-t-elle fait appel pour chorégraphier l'intégralité des tableaux gigantesques du Eras Tour ?", options: ["Mandy Moore", "Parris Goebel", "Kenny Ortega", "Laurieann Gibson"], correct: 0 },
-            { question: "Lequel de ces effets visuels N'EST PAS utilisé pendant le concert ?", options: ["Des vélos lumineux", "Une cabane en bois dans une forêt", "Un plongeon virtuel sous la scène", "Un vol au-dessus du public en drone"], correct: 3 },
-            { question: "Environ combien de camions semi-remorques sont nécessaires pour transporter l'infrastructure complète d'un seul concert de la tournée ?", options: ["Environ 30", "Environ 50", "Environ 90", "Environ 150"], correct: 2 }
+            { question: "La supercar Lexus LFA possède un V10 unique. Avec qui a-t-il été co-développé ?", options: ["Honda", "Yamaha", "Kawasaki", "Sony"], correct: 1 },
+            { question: "Quelle peinture exclusive à Lexus nécessite 15 ans de recherche pour recréer la couleur du papillon Morpho ?", options: ["Infrared", "Structural Blue", "Sonic Titanium", "Ultrasonic Blue"], correct: 1 },
+            { question: "Quel modèle hybride Toyota a remporté Le Mans trois fois de suite (2018-2020) ?", options: ["TS050 Hybrid", "GR010 Hybrid", "GT-One", "TS030 Hybrid"], correct: 0 },
+            { question: "Quel bois précieux, utilisé pour les pianos de concert, orne certains volants Lexus ?", options: ["Bois de rose", "Bois de Shimamoku", "Ébène de Macassar", "Ronce de noyer"], correct: 1 },
+            { question: "Avant de fabriquer des voitures, que produisait l'entreprise de Sakichi Toyoda ?", options: ["Des montres", "Des métiers à tisser", "Des motos", "Des instruments"], correct: 1 }
         ];
 
-        let activeQuizData = []; 
         let currentQuestionIndex = 0;
         let score = 0;
         let currentPseudo = "";
         let startTime = 0;
         let totalTime = 0;
-        // On change la clé de sauvegarde pour ne pas mélanger avec le quiz Toyota !
-        let leaderboard = JSON.parse(localStorage.getItem('erasTourLeaderboard')) || [];
+        let leaderboard = JSON.parse(localStorage.getItem('toyotaLexusLeaderboard')) || [];
 
         const startScreen = document.getElementById('start-screen');
         const quizBlock = document.getElementById('quiz-block');
@@ -420,18 +390,11 @@
             if (e.key === 'Enter') startQuiz();
         });
 
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
-
         function renderLeaderboard() {
             leaderboardList.innerHTML = '';
             
             if (leaderboard.length === 0) {
-                leaderboardList.innerHTML = '<li style="text-align:center; color:#8a8893; font-size:13px; font-style:italic;">It\'s me, hi... Aucun score pour le moment.</li>';
+                leaderboardList.innerHTML = '<li style="text-align:center; color:#666; font-size:13px;">Aucun nom de pilote enregistré pour le moment.</li>';
                 return;
             }
 
@@ -475,7 +438,7 @@
                 leaderboard.push({ name: currentPseudo, score: score, time: totalTime });
             }
             
-            localStorage.setItem('erasTourLeaderboard', JSON.stringify(leaderboard));
+            localStorage.setItem('toyotaLexusLeaderboard', JSON.stringify(leaderboard));
             renderLeaderboard();
         }
 
@@ -487,15 +450,6 @@
             }
             errorMsg.style.display = 'none';
             currentPseudo = pseudo;
-
-            activeQuizData = JSON.parse(JSON.stringify(baseQuizData));
-            shuffleArray(activeQuizData);
-
-            activeQuizData.forEach(q => {
-                const correctText = q.options[q.correct];
-                shuffleArray(q.options);
-                q.correct = q.options.indexOf(correctText);
-            });
 
             currentQuestionIndex = 0;
             score = 0;
@@ -514,10 +468,10 @@
             void quizBlock.offsetWidth; 
             quizBlock.classList.add('fade-in');
 
-            const currentData = activeQuizData[currentQuestionIndex];
+            const currentData = quizData[currentQuestionIndex];
             questionEl.innerText = currentData.question;
             
-            const progressPercent = (currentQuestionIndex / activeQuizData.length) * 100;
+            const progressPercent = (currentQuestionIndex / quizData.length) * 100;
             progressBar.style.width = `${progressPercent}%`;
 
             optionsEl.innerHTML = '';
@@ -532,7 +486,7 @@
         }
 
         function selectAnswer(selectedIndex, btnElement) {
-            const correctIndex = activeQuizData[currentQuestionIndex].correct;
+            const correctIndex = quizData[currentQuestionIndex].correct;
             const allButtons = optionsEl.querySelectorAll('.option-btn');
             
             allButtons.forEach(btn => btn.disabled = true);
@@ -547,7 +501,7 @@
 
             setTimeout(() => {
                 currentQuestionIndex++;
-                if (currentQuestionIndex < activeQuizData.length) {
+                if (currentQuestionIndex < quizData.length) {
                     loadQuestion();
                 } else {
                     showResults();
@@ -569,10 +523,10 @@
             saveScore();
 
             let msg = "";
-            if (score === 15) msg = `Parfait ${currentPseudo} ! Tu es le/la véritable Mastermind. À ce niveau, tu pourrais remplacer Taylor sur scène.`;
-            else if (score >= 10) msg = `Superbe ${currentPseudo} ! Tu connais tes Eras sur le bout des doigts. Prêt(e) pour le premier rang VIP.`;
-            else if (score >= 5) msg = `Pas mal ${currentPseudo} ! Tu as survécu à la Grande Guerre des billets, mais il faut encore réviser la setlist.`;
-            else msg = `Ouch ${currentPseudo}... Il est temps d'écouter la discographie complète (Taylor's Version) de toute urgence.`;
+            if (score === 15) msg = `Parfait ${currentPseudo}. Un sans-faute digne d'un pilote professionnel !`;
+            else if (score >= 10) msg = `Très impressionnant ${currentPseudo}. L'esprit Gazoo Racing coule dans vos veines.`;
+            else if (score >= 5) msg = `Pas mal ${currentPseudo}, mais il reste du chemin avant de maîtriser l'histoire.`;
+            else msg = `Ouch ${currentPseudo}... Un petit tour en concession s'impose.`;
             
             scoreMessageEl.innerText = msg;
         }
@@ -585,23 +539,13 @@
             pseudoInput.value = ''; 
         }
 
+        // Fonction pour réinitialiser les scores avec confirmation
         function resetScores() {
-            if (confirm("Êtes-vous sûr(e) de vouloir effacer le classement de la tournée ? Cette action est irréversible.")) {
+            if (confirm("Êtes-vous sûr de vouloir effacer le classement ? Cette action est irréversible.")) {
                 leaderboard = [];
-                localStorage.removeItem('erasTourLeaderboard');
+                localStorage.removeItem('toyotaLexusLeaderboard');
                 renderLeaderboard();
             }
-        }
-
-        function shareScore() {
-            const url = window.location.href;
-            const textToCopy = `✨ J'ai survécu au Eras Tour Trivia avec un score de ${score}/15 en ${totalTime}s ! Are you ready for it? Viens battre mon score : ${url}`;
-            
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                alert("Message copié ! Prêt à être envoyé à tes collègues Swifties 🪩");
-            }).catch(err => {
-                alert("Oops, impossible de copier automatiquement. Voici votre score : " + score + "/15 en " + totalTime + "s !");
-            });
         }
     </script>
 </body>
