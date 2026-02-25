@@ -14,8 +14,8 @@
             --toyota-red: #EB0A1E;
             --correct-color: #27ae60;
             --gold: #d4af37;
-            --silver: #C0C0C0; /* Ajout couleur argent */
-            --bronze: #CD7F32; /* Ajout couleur bronze */
+            --silver: #C0C0C0; 
+            --bronze: #CD7F32; 
             --text-light: #ffffff;
             --text-muted: #666666;
         }
@@ -144,7 +144,7 @@
             display: block;
             margin-top: 25px;
             font-size: 10px;
-            color: #333333; /* Très discret, presque invisible */
+            color: #333333; 
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -209,7 +209,6 @@
             background-color: var(--gold);
         }
 
-        /* Style spécifique pour la récompense suprême du titre pour la rendre dorée */
         .info-icon.supreme {
             border-color: var(--gold);
             color: var(--gold);
@@ -390,7 +389,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) scale(0.5);
-            background: rgba(235, 10, 30, 0.95);
+            background: rgba(235, 10, 30, 0.95); 
             color: #ffffff;
             padding: 15px 40px;
             border-radius: 8px;
@@ -487,7 +486,7 @@
 
         <div id="result-container">
             <h1>Score</h1>
-            <div class="score-text"><span id="score">0</span> / 21</div>
+            <div class="score-text"><span id="score">0</span> / <span id="total-questions">21</span></div>
             <div class="time-text" id="time-display">Temps: 0s</div>
             <p id="score-message" style="margin-bottom: 30px; color: var(--text-muted);"></p>
             <button class="action-btn" onclick="returnToHome()">Classement</button>
@@ -495,7 +494,8 @@
     </div>
 
     <script>
-        const quizData = [ // 21
+        // Tableau original des questions (La "base de données")
+        const baseQuizData = [
             // Facile
             { question: "Quel est le nom de la division de luxe créée par Toyota ?", options: ["Acura", "Infiniti", "Lexus", "Genesis"], correct: 2 },
             { question: "Quelle voiture Toyota est considérée comme la pionnière mondiale des motorisations hybrides ?", options: ["Corolla", "Prius", "Yaris", "Camry"], correct: 1 },
@@ -524,6 +524,7 @@
             { question: "Avant de fabriquer des voitures, que produisait l'entreprise de Sakichi Toyoda ?", options: ["Des montres", "Des métiers à tisser", "Des motos", "Des instruments"], correct: 1 }
         ];
 
+        let activeQuizData = []; // Tableau qui sera mélangé à chaque partie
         let currentQuestionIndex = 0;
         let score = 0;
         let currentPseudo = "";
@@ -531,10 +532,8 @@
         let totalTime = 0;
         let leaderboard = JSON.parse(localStorage.getItem('toyotaLexusLeaderboard')) || [];
 
-        // Tableau des messages moqueurs pour mauvaise réponse
         const teaseMessages = ["ET NON !", "RATÉ !", "SÉRIEUSEMENT ?", "AÏE...", "BÊTE COMME THOMAS !", "CHEH !", "OLALAAAAA", "UN STAGIAIRE !", "J'AI VU MIEUX !"];
 
-        // Tableau des messages de consolation pour le classement (en dehors du Top 3)
         const consolationMessages = [
             "1 Boisson 🥤",
             "1 Café ☕"
@@ -548,6 +547,7 @@
         const questionEl = document.getElementById('question');
         const optionsEl = document.getElementById('options');
         const scoreEl = document.getElementById('score');
+        const totalQuestionsEl = document.getElementById('total-questions'); // Cible pour mettre à jour /21
         const timeDisplayEl = document.getElementById('time-display');
         const scoreMessageEl = document.getElementById('score-message');
         const pseudoInput = document.getElementById('pseudo-input');
@@ -557,10 +557,19 @@
         const antiCheatToggle = document.getElementById('anti-cheat-toggle');
 
         renderLeaderboard();
+        totalQuestionsEl.innerText = baseQuizData.length;
 
         pseudoInput.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') startQuiz();
         });
+
+        // Fonction pour mélanger un tableau aléatoirement
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
 
         function renderLeaderboard() {
             leaderboardList.innerHTML = '';
@@ -583,14 +592,11 @@
                 const li = document.createElement('li');
                 li.classList.add('leaderboard-item');
                 
-                // --- Attribution des classes pour Or, Argent, Bronze ---
                 let rankClass = 'lb-rank';
                 if (index === 0) rankClass += ' rank-gold';
                 else if (index === 1) rankClass += ' rank-silver';
                 else if (index === 2) rankClass += ' rank-bronze';
-                // -------------------------------------------------------
 
-                // --- GESTION DES RECOMPENSES INDIVIDUELLES ET CONSOLATIONS ---
                 let rewardHTML = '';
                 if(index === 0) {
                     rewardHTML = `<div class="info-icon">i<div class="info-tooltip">1 Smash Burger 🍔</div></div>`;
@@ -602,7 +608,6 @@
                     const msg = consolationMessages[(index - 3) % consolationMessages.length];
                     rewardHTML = `<div class="info-icon">i<div class="info-tooltip" style="color:var(--toyota-red);">${msg}</div></div>`;
                 }
-                // ---------------------------------------------------------------
                 
                 li.innerHTML = `
                     <span class="${rankClass}">#${index + 1}</span>
@@ -643,6 +648,17 @@
             errorMsg.style.display = 'none';
             currentPseudo = pseudo;
 
+            // --- NOUVEAU : Copier et mélanger les questions et les réponses ---
+            activeQuizData = JSON.parse(JSON.stringify(baseQuizData)); // Copie propre
+            shuffleArray(activeQuizData); // Mélange l'ordre des questions
+
+            activeQuizData.forEach(q => {
+                const correctText = q.options[q.correct]; // Sauvegarde le texte de la bonne réponse
+                shuffleArray(q.options); // Mélange l'ordre des choix
+                q.correct = q.options.indexOf(correctText); // Retrouve l'index de la bonne réponse
+            });
+            // ------------------------------------------------------------------
+
             currentQuestionIndex = 0;
             score = 0;
             startTime = Date.now();
@@ -660,10 +676,10 @@
             void quizBlock.offsetWidth; 
             quizBlock.classList.add('fade-in');
 
-            const currentData = quizData[currentQuestionIndex];
+            const currentData = activeQuizData[currentQuestionIndex];
             questionEl.innerText = currentData.question;
             
-            const progressPercent = (currentQuestionIndex / quizData.length) * 100;
+            const progressPercent = (currentQuestionIndex / activeQuizData.length) * 100;
             progressBar.style.width = `${progressPercent}%`;
 
             optionsEl.innerHTML = '';
@@ -678,7 +694,7 @@
         }
 
         function selectAnswer(selectedIndex, btnElement) {
-            const correctIndex = quizData[currentQuestionIndex].correct;
+            const correctIndex = activeQuizData[currentQuestionIndex].correct;
             const allButtons = optionsEl.querySelectorAll('.option-btn');
             const isAntiCheatActive = antiCheatToggle.checked;
             
@@ -690,12 +706,10 @@
             } else {
                 btnElement.classList.add('incorrect');
                 
-                // On affiche la bonne réponse seulement si l'anti-triche n'est PAS coché
                 if (!isAntiCheatActive) {
                     allButtons[correctIndex].classList.add('correct');
                 }
 
-                // --- APPARITION DU POPUP LOSER ---
                 const randomMsg = teaseMessages[Math.floor(Math.random() * teaseMessages.length)];
                 teasePopup.innerText = randomMsg;
                 teasePopup.classList.add('show');
@@ -703,12 +717,11 @@
                 setTimeout(() => {
                     teasePopup.classList.remove('show');
                 }, 800); 
-                // ---------------------------------
             }
 
             setTimeout(() => {
                 currentQuestionIndex++;
-                if (currentQuestionIndex < quizData.length) {
+                if (currentQuestionIndex < activeQuizData.length) {
                     loadQuestion();
                 } else {
                     showResults();
@@ -730,9 +743,10 @@
             saveScore();
 
             let msg = "";
-            if (score === 21) msg = `Parfait ${currentPseudo}. Un sans-faute digne d'un pilote professionnel !`;
-            else if (score >= 10) msg = `Très impressionnant ${currentPseudo}. L'esprit Gazoo Racing coule dans vos veines.`;
-            else if (score >= 5) msg = `Pas mal ${currentPseudo}, mais il reste du chemin avant de maîtriser l'histoire.`;
+            const totalQ = activeQuizData.length;
+            if (score === totalQ) msg = `Parfait ${currentPseudo}. Un sans-faute digne d'un pilote professionnel !`;
+            else if (score >= totalQ / 2) msg = `Très impressionnant ${currentPseudo}. L'esprit Gazoo Racing coule dans vos veines.`;
+            else if (score >= totalQ / 4) msg = `Pas mal ${currentPseudo}, mais il reste du chemin avant de maîtriser l'histoire.`;
             else msg = `Ouch ${currentPseudo}... Un petit tour en concession s'impose.`;
             
             scoreMessageEl.innerText = msg;
@@ -746,12 +760,21 @@
             pseudoInput.value = ''; 
         }
 
-        // Fonction pour réinitialiser les scores avec confirmation
+        // --- NOUVEAU : Fonction de réinitialisation avec Mot de Passe ---
         function resetScores() {
-            if (confirm("Êtes-vous sûr de vouloir effacer le classement ? Cette action est irréversible.")) {
-                leaderboard = [];
-                localStorage.removeItem('toyotaLexusLeaderboard');
-                renderLeaderboard();
+            const pwd = prompt("Accès administrateur. Entrez le mot de passe pour réinitialiser :");
+            
+            // Le mot de passe choisi est "SUPRA" (sensible aux majuscules/minuscules)
+            if (pwd === "SUPRA") {
+                if (confirm("Êtes-vous sûr de vouloir effacer le classement ? Cette action est irréversible.")) {
+                    leaderboard = [];
+                    localStorage.removeItem('toyotaLexusLeaderboard');
+                    renderLeaderboard();
+                    alert("Classement réinitialisé avec succès !");
+                }
+            } else if (pwd !== null) {
+                // Si l'utilisateur tape un mauvais mot de passe (et n'a pas cliqué sur Annuler)
+                alert("Mot de passe incorrect. Accès refusé ! 🛑");
             }
         }
     </script>
