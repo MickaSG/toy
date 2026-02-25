@@ -75,7 +75,7 @@
             border-radius: 4px;
             margin-bottom: 20px;
             overflow: hidden;
-            display: none; /* Affiché uniquement pendant le quiz */
+            display: none;
         }
 
         .timer-bar {
@@ -396,7 +396,7 @@
             color: var(--toyota-red);
         }
 
-        /* --- POPUP LOSER & COMBO --- */
+        /* --- POPUPS (LOSER / COMBO / EASTER EGG) --- */
         .tease-popup {
             position: absolute;
             top: 50%;
@@ -418,7 +418,6 @@
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             pointer-events: none; 
         }
-
         .tease-popup.show {
             opacity: 1;
             visibility: visible;
@@ -445,11 +444,38 @@
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             pointer-events: none; 
         }
-
         .combo-popup.show {
             opacity: 1;
             visibility: visible;
             transform: translate(-50%, -50%) scale(1) rotate(5deg); 
+        }
+
+        .easter-egg-popup {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background: rgba(20, 20, 20, 0.95);
+            border: 2px solid var(--gold);
+            color: var(--text-light);
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+            opacity: 0;
+            visibility: hidden;
+            z-index: 200;
+            width: 85%;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+        }
+        .easter-egg-popup.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
         }
         /* --------------------------- */
 
@@ -464,7 +490,14 @@
             max-height: 180px;
             overflow-y: auto;
             text-align: left;
-            display: none; /* Affiché uniquement à la fin s'il y a des erreurs */
+            display: none; 
+            /* Rendre la barre de défilement invisible */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE et Edge */
+        }
+        /* Masquer la barre sur Chrome, Safari, Opera */
+        .recap-container::-webkit-scrollbar {
+            display: none; 
         }
         
         .recap-title {
@@ -542,6 +575,8 @@
             <div class="progress-bar" id="progress-bar"></div>
         </div>
 
+        <div id="easter-egg-popup" class="easter-egg-popup"></div>
+
         <div id="start-screen" class="fade-in">
             <h1>Quiz</h1>
             <input type="text" id="pseudo-input" class="pseudo-input" placeholder="Entrez votre nom de pilote..." autocomplete="off" maxlength="15">
@@ -589,6 +624,7 @@
     </div>
 
     <script>
+        // Tableau original des questions (La "base de données")
         const baseQuizData = [
             // Facile
             { question: "Quel est le nom de la division de luxe créée par Toyota ?", options: ["Acura", "Infiniti", "Lexus", "Genesis"], correct: 2 },
@@ -626,16 +662,13 @@
         let totalTime = 0;
         let leaderboard = JSON.parse(localStorage.getItem('toyotaLexusLeaderboard')) || [];
         
-        // --- NOUVELLES VARIABLES ---
         let questionTimerInterval;
         let timeLeft = 15;
         let comboCount = 0;
-        let wrongQuestions = []; // Stocke les intitulés des erreurs pour la fin
-        // ---------------------------
+        let wrongQuestions = []; 
 
-        const teaseMessages = ["ET NON !", "RATÉ !", "SÉRIEUSEMENT ?", "AÏE...", "BÊTE COMME THOMAS !", "CHEH !", "OLALAAAAA", "UN STAGIAIRE !", "J'AI VU MIEUX !"];
+        const teaseMessages = ["ET NON !", "RATÉ !", "SÉRIEUSEMENT ?", "AÏE...", "BÊTE COMME THOMAS !", "CHEH !", "OLALAAAAA", "UN STAGIAIRE !", "J'AI VU MIEUX !", "C'EST HONTEUX !"];
         const consolationMessages = ["1 Boisson 🥤", "1 Café ☕"];
-        const comboMessages = ["COMBO x", "EN FEU 🔥", "GOD MODE 🐐", "V-TEC ENGAGÉ 🏎️", "INARRÊTABLE !"];
 
         const startScreen = document.getElementById('start-screen');
         const quizBlock = document.getElementById('quiz-block');
@@ -653,6 +686,7 @@
         const leaderboardList = document.getElementById('leaderboard-list');
         const teasePopup = document.getElementById('tease-popup');
         const comboPopup = document.getElementById('combo-popup');
+        const easterEggPopup = document.getElementById('easter-egg-popup');
         const antiCheatToggle = document.getElementById('anti-cheat-toggle');
         const timerContainer = document.getElementById('timer-container');
         const timerBar = document.getElementById('timer-bar');
@@ -666,7 +700,6 @@
             if (e.key === 'Enter') startQuiz();
         });
 
-        // Fonction de mélange
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -749,16 +782,32 @@
             errorMsg.style.display = 'none';
             currentPseudo = pseudo;
 
-            // --- EASTER EGGS (Blagues cachées) ---
+            // --- EASTER EGGS (Mode Popup fluide) ---
+            let easterEggMsg = "";
             const pseudoLower = pseudo.toLowerCase();
-            if(pseudoLower === "le creff") alert("Ah, Monsieur le Directeur... on va voir si vous connaissez vraiment votre entreprise !");
-            else if(pseudoLower === "thomas") alert("Thomas, interdiction absolue d'aller chercher sur Google !");
-            else if(pseudoLower === "isma") alert("Isma, montre-nous que tu es le Boss du magasin !");
-            else if(pseudoLower === "micka") alert("Micka, arrête de râler et concentre-toi sur le chrono !");
-            else if(pseudoLower === "max") alert("Max, la pression de l'atelier est sur tes épaules !");
+            if(pseudoLower === "le creff") easterEggMsg = "Ah, Monsieur le Directeur... on va voir si vous connaissez vraiment votre entreprise !";
+            else if(pseudoLower === "thomas") easterEggMsg = "Je crois en toi ma rouquine !";
+            else if(pseudoLower === "isma") easterEggMsg = "Isma, montre-nous que tu es le boss du magasin !";
+            else if(pseudoLower === "micka") easterEggMsg = "Tu as déjà les réponses enfoiré !";
+            else if(pseudoLower === "max") easterEggMsg = "Max, la pression du magasin est sur tes épaules !";
+            else if(pseudoLower === "lucas") easterEggMsg = "Let's go mon champion !";
+            else if(pseudoLower === "anthony") easterEggMsg = "Ici, aucune chance de casser un moteur !";
+            else if(pseudoLower === "benjamin") easterEggMsg = "Tu peux le faire mon pastel de nata !";
+            else if(pseudoLower === "alexis") easterEggMsg = "Le gueux de Rillieux aura t-il le niveau ?";
+            else if(pseudoLower === "arthur") easterEggMsg = "Apprenti à la con !";
+            else if(pseudoLower === "maxime") easterEggMsg = "Juste con.";
+            else if(pseudoLower === "gabrielle") easterEggMsg = "Sana inanıyorum !";
+            else if(pseudoLower === "laurent") easterEggMsg = "Allez mon vieux !";
+
+            if (easterEggMsg) {
+                easterEggPopup.innerText = easterEggMsg;
+                easterEggPopup.classList.add('show');
+                setTimeout(() => {
+                    easterEggPopup.classList.remove('show');
+                }, 3500); 
+            }
             // ------------------------------------
 
-            // Copie et mélange complet (Questions + Choix)
             activeQuizData = JSON.parse(JSON.stringify(baseQuizData)); 
             shuffleArray(activeQuizData); 
 
@@ -776,7 +825,7 @@
 
             startScreen.style.display = 'none';
             progressWrapper.style.display = 'block';
-            timerContainer.style.display = 'block'; // Affiche la barre de temps
+            timerContainer.style.display = 'block'; 
             quizBlock.style.display = 'block';
             quizBlock.classList.add('fade-in');
 
@@ -804,7 +853,7 @@
                 optionsEl.appendChild(button);
             });
 
-            startQuestionTimer(); // Lance les 15 secondes
+            startQuestionTimer(); 
         }
 
         // --- GESTION DU CHRONO PAR QUESTION (15s) ---
@@ -812,9 +861,8 @@
             clearInterval(questionTimerInterval);
             timeLeft = 15;
             timerBar.style.width = '100%';
-            timerBar.style.transition = 'none'; // Coupe l'animation pour remettre à 100 instantanément
+            timerBar.style.transition = 'none'; 
             
-            // Laisse un poil de temps pour que le navigateur comprenne, puis lance l'anim
             setTimeout(() => {
                 timerBar.style.transition = 'width 1s linear';
                 
@@ -824,7 +872,7 @@
                     
                     if (timeLeft <= 0) {
                         clearInterval(questionTimerInterval);
-                        handleTimeOut(); // Temps écoulé !
+                        handleTimeOut(); 
                     }
                 }, 1000);
             }, 50);
@@ -836,9 +884,8 @@
             const isAntiCheatActive = antiCheatToggle.checked;
             
             allButtons.forEach(btn => btn.disabled = true);
-            comboCount = 0; // Cassage de combo !
+            comboCount = 0; 
             
-            // Stocke la question ratée
             wrongQuestions.push(activeQuizData[currentQuestionIndex].question);
 
             if (!isAntiCheatActive) {
@@ -856,7 +903,7 @@
         // ------------------------------------------
 
         function selectAnswer(selectedIndex, btnElement) {
-            clearInterval(questionTimerInterval); // Stoppe le chrono
+            clearInterval(questionTimerInterval); 
             
             const correctIndex = activeQuizData[currentQuestionIndex].correct;
             const allButtons = optionsEl.querySelectorAll('.option-btn');
@@ -873,19 +920,22 @@
                 if (comboCount >= 3) {
                     let cText = "COMBO x" + comboCount + " !";
                     if (comboCount === 5) cText = "EN FEU 🔥 !";
-                    if (comboCount === 7) cText = "V-TEC ENGAGÉ 🏎️ !";
-                    if (comboCount >= 10) cText = "GOD MODE 🐐 !";
+                    if (comboCount === 7) cText = "UNE MACHINE 🏎️ !";
+                    if (comboCount >= 10) cText = "LA PUISSANCE 🧨 !";
+                    if (comboCount >= 10) cText = "TIÉ UN TIGRE 🐯 !";
+                    if (comboCount >= 15) cText = "GOD MODE 🐐 !";
+                    if (comboCount >= 20) cText = "INDÉTRONABLE 🏁 !";
+                    if (comboCount >= 25) cText = "LE MEILLEUR.";
                     
                     comboPopup.innerText = cText;
                     comboPopup.classList.add('show');
                     setTimeout(() => comboPopup.classList.remove('show'), 800);
                 }
-                // -----------------------
 
             } else {
                 btnElement.classList.add('incorrect');
-                comboCount = 0; // Perte du combo
-                wrongQuestions.push(activeQuizData[currentQuestionIndex].question); // Ajout au récap
+                comboCount = 0; 
+                wrongQuestions.push(activeQuizData[currentQuestionIndex].question); 
                 
                 if (!isAntiCheatActive) {
                     allButtons[correctIndex].classList.add('correct');
@@ -928,7 +978,6 @@
             
             saveScore();
 
-            // Message de fin
             let msg = "";
             const totalQ = activeQuizData.length;
             if (score === totalQ) msg = `Parfait ${currentPseudo}. Un sans-faute absolu digne d'un pilote professionnel !`;
@@ -962,7 +1011,6 @@
         }
 
         function resetScores() {
-            // Demande le mot de passe "SUPRA" pour vider le classement
             const pwd = prompt("Accès administrateur. Entrez le mot de passe pour réinitialiser :");
             
             if (pwd === "SUPRA") {
