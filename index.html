@@ -139,8 +139,32 @@
             color: var(--toyota-red);
         }
 
+        /* --- STYLE OPTION DISCRETE ANTI-TRICHE --- */
+        .discreet-toggle {
+            display: block;
+            margin-top: 25px;
+            font-size: 10px;
+            color: #333333; /* Très discret, presque invisible */
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+        }
+
+        .discreet-toggle:hover {
+            color: var(--text-muted);
+        }
+
+        .discreet-toggle input {
+            vertical-align: middle;
+            margin-right: 5px;
+            opacity: 0.5;
+            cursor: pointer;
+        }
+        /* ----------------------------------------- */
+
         .leaderboard-container {
-            margin-top: 40px;
+            margin-top: 30px;
             padding-top: 30px;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
@@ -267,7 +291,6 @@
             text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
         }
 
-        /* --- Ajout des styles pour argent et bronze --- */
         .rank-silver {
             color: var(--silver);
             font-weight: 700;
@@ -279,7 +302,6 @@
             font-weight: 700;
             text-shadow: 0 0 10px rgba(205, 127, 50, 0.4);
         }
-        /* --------------------------------------------- */
 
         .lb-name {
             flex-grow: 1;
@@ -368,7 +390,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) scale(0.5);
-            background: rgba(235, 10, 30, 0.95); /* Toyota Red */
+            background: rgba(235, 10, 30, 0.95);
             color: #ffffff;
             padding: 15px 40px;
             border-radius: 8px;
@@ -445,6 +467,10 @@
             <button class="action-btn" onclick="startQuiz()">Démarrer</button>
             <button class="reset-btn" onclick="resetScores()">Réinitialiser le classement</button>
 
+            <label class="discreet-toggle" title="Cacher les bonnes réponses lors d'une erreur">
+                <input type="checkbox" id="anti-cheat-toggle"> Mode anti-triche
+            </label>
+
             <div class="leaderboard-container">
                 <div class="leaderboard-title">Temple des Goats<div class="info-icon supreme">i<div class="info-tooltip">1 Menu Burger 🍔🍟🥤</div></div></div>
                 <ul class="leaderboard-list" id="leaderboard-list">
@@ -469,7 +495,7 @@
     </div>
 
     <script>
-        const quizData = [
+        const quizData = [ // 21
             // Facile
             { question: "Quel est le nom de la division de luxe créée par Toyota ?", options: ["Acura", "Infiniti", "Lexus", "Genesis"], correct: 2 },
             { question: "Quelle voiture Toyota est considérée comme la pionnière mondiale des motorisations hybrides ?", options: ["Corolla", "Prius", "Yaris", "Camry"], correct: 1 },
@@ -528,6 +554,7 @@
         const errorMsg = document.getElementById('error-msg');
         const leaderboardList = document.getElementById('leaderboard-list');
         const teasePopup = document.getElementById('tease-popup');
+        const antiCheatToggle = document.getElementById('anti-cheat-toggle');
 
         renderLeaderboard();
 
@@ -653,6 +680,7 @@
         function selectAnswer(selectedIndex, btnElement) {
             const correctIndex = quizData[currentQuestionIndex].correct;
             const allButtons = optionsEl.querySelectorAll('.option-btn');
+            const isAntiCheatActive = antiCheatToggle.checked;
             
             allButtons.forEach(btn => btn.disabled = true);
 
@@ -661,7 +689,11 @@
                 score++;
             } else {
                 btnElement.classList.add('incorrect');
-                allButtons[correctIndex].classList.add('correct');
+                
+                // On affiche la bonne réponse seulement si l'anti-triche n'est PAS coché
+                if (!isAntiCheatActive) {
+                    allButtons[correctIndex].classList.add('correct');
+                }
 
                 // --- APPARITION DU POPUP LOSER ---
                 const randomMsg = teaseMessages[Math.floor(Math.random() * teaseMessages.length)];
