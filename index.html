@@ -45,7 +45,7 @@
             padding: 40px;
             text-align: center;
             position: relative;
-            overflow: hidden;
+            overflow: visible; 
         }
 
         .progress-bar-container {
@@ -149,7 +149,90 @@
             text-transform: uppercase;
             letter-spacing: 3px;
             margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+
+        /* --- STYLES DE L'INFO-BULLE (RECOMPENSES) --- */
+        .info-icon {
+            position: relative;
+            cursor: help;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 1px solid var(--text-muted);
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+            text-transform: lowercase; 
+            letter-spacing: 0 !important; 
+            transition: all 0.3s ease;
+            margin-left: 10px;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .info-icon:hover {
+            border-color: var(--gold);
+            color: var(--bg-color);
+            background-color: var(--gold);
+        }
+
+        /* Style spécifique pour la récompense suprême du titre pour la rendre dorée */
+        .info-icon.supreme {
+            border-color: var(--gold);
+            color: var(--gold);
+            box-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
+        }
+
+        .info-icon.supreme:hover {
+            color: var(--bg-color);
+            background-color: var(--gold);
+        }
+
+        .info-tooltip {
+            position: absolute;
+            bottom: 150%;
+            right: -10px; 
+            background-color: #1a1a1a;
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            padding: 10px;
+            border-radius: 6px;
+            width: max-content;
+            color: var(--text-light);
+            font-size: 12px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.9);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            text-transform: none; 
+            letter-spacing: 0.5px;
+            line-height: 1.4;
+        }
+
+        .info-icon:hover .info-tooltip {
+            opacity: 1;
+            visibility: visible;
+            bottom: 135%;
+        }
+
+        .info-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            right: 12px;
+            border-width: 6px;
+            border-style: solid;
+            border-color: rgba(212, 175, 55, 0.4) transparent transparent transparent;
+        }
+        /* ------------------------------------------- */
 
         .leaderboard-list {
             list-style: none;
@@ -192,7 +275,7 @@
 
         .lb-score-wrap {
             text-align: right;
-            min-width: 80px;
+            min-width: 70px;
         }
 
         .lb-score {
@@ -291,7 +374,6 @@
             visibility: visible;
             transform: translate(-50%, -50%) scale(1) rotate(-5deg); 
         }
-        /* ---------------------------------- */
 
         .score-text {
             font-size: 48px;
@@ -348,7 +430,7 @@
             <button class="reset-btn" onclick="resetScores()">Réinitialiser le classement</button>
 
             <div class="leaderboard-container">
-                <div class="leaderboard-title">Temple des Goats</div>
+                <div class="leaderboard-title">Temple des Goats<div class="info-icon supreme">i<div class="info-tooltip">1 Menu Burger 🍔🍟🥤</div></div></div>
                 <ul class="leaderboard-list" id="leaderboard-list">
                     </ul>
             </div>
@@ -407,8 +489,17 @@
         let totalTime = 0;
         let leaderboard = JSON.parse(localStorage.getItem('toyotaLexusLeaderboard')) || [];
 
-        // Tableau des messages moqueurs
+        // Tableau des messages moqueurs pour mauvaise réponse
         const teaseMessages = ["ET NON !", "RATÉ !", "SÉRIEUSEMENT ?", "AÏE...", "BÊTE COMME THOMAS !"];
+
+        // Tableau des messages de consolation pour le classement (en dehors du Top 3)
+        const consolationMessages = [
+            "Tu feras mieux la prochaine fois 🥲",
+            "Dommaaaaaaage 🤡",
+            "La médaille en chocolat 🍫",
+            "Relis tes cours ! 📚",
+            "C'est la honte... 🫣"
+        ];
 
         const startScreen = document.getElementById('start-screen');
         const quizBlock = document.getElementById('quiz-block');
@@ -454,6 +545,20 @@
                 
                 const rankClass = index === 0 ? 'lb-rank rank-gold' : 'lb-rank';
                 
+                // --- GESTION DES RECOMPENSES INDIVIDUELLES ET CONSOLATIONS ---
+                let rewardHTML = '';
+                if(index === 0) {
+                    rewardHTML = `<div class="info-icon">i<div class="info-tooltip">1 Burger 🍔</div></div>`;
+                } else if(index === 1) {
+                    rewardHTML = `<div class="info-icon">i<div class="info-tooltip">1 Monster ⚡</div></div>`;
+                } else if(index === 2) {
+                    rewardHTML = `<div class="info-icon">i<div class="info-tooltip">1 Café ☕</div></div>`;
+                } else {
+                    const msg = consolationMessages[(index - 3) % consolationMessages.length];
+                    rewardHTML = `<div class="info-icon">i<div class="info-tooltip" style="color:var(--toyota-red);">${msg}</div></div>`;
+                }
+                // ---------------------------------------------------------------
+                
                 li.innerHTML = `
                     <span class="${rankClass}">#${index + 1}</span>
                     <span class="lb-name">${entry.name}</span>
@@ -461,6 +566,7 @@
                         <span class="lb-score">${entry.score} pts</span>
                         <span class="lb-time">${entry.time} sec</span>
                     </div>
+                    ${rewardHTML}
                 `;
                 leaderboardList.appendChild(li);
             });
